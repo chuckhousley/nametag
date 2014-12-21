@@ -5,7 +5,11 @@ void printName();
 
 SoftwareSerial lcd = SoftwareSerial(0,2);
 int nameButton = 8;
+int colorButton = 9;
 int b = 0;
+
+bool pressNameFlag = false;
+bool pressColorFlag = false;
 
 prog_char string_0[] PROGMEM = "Cabana";
 prog_char string_1[] PROGMEM = "Cabaret";
@@ -699,8 +703,7 @@ string_595, string_596, string_597, string_598, string_599, string_600, };
 
 char buffer[16];
 
-int numOfNames = 602;
-bool pressFlag = false;
+int numOfNames = 601;
 
 void setup() {
   lcd.begin(9600);
@@ -745,47 +748,18 @@ void setup() {
   
 
   pinMode(nameButton, INPUT_PULLUP);
+  pinMode(colorButton, INPUT_PULLUP);
   
   delay(1000);
 }
 
-uint8_t red, green, blue;
-
 void loop() {
- // adjust colors 
- /*for (red = 0; red < 255; red++) {
-  lcd.write(0xFE);
-  lcd.write(0xD0);
-  lcd.write(red); 
-  lcd.write((uint8_t)0);
-  lcd.write(255 - red);
-  delay(10);  // give it some time to adjust the backlight!
- }   
-
- for (green = 0; green < 255; green++) {
-  lcd.write(0xFE);
-  lcd.write(0xD0);
-  lcd.write(255-green); 
-  lcd.write(green);
-  lcd.write((uint8_t)0);
-  delay(10);  // give it some time to adjust the backlight!
- }   
-
- for (blue = 0; blue < 255; blue++) {
-  lcd.write(0xFE);
-  lcd.write(0xD0);
-  lcd.write((uint8_t)0); 
-  lcd.write(255-blue);
-  lcd.write(blue);
-  delay(10);  // give it some time to adjust the backlight!
- }*/
  printName();
- 
 }
 
 void printName() {
-  if (digitalRead(nameButton) == LOW && pressFlag == false) {
-   pressFlag = true;
+  if (digitalRead(nameButton) == LOW && pressNameFlag == false) {
+   pressNameFlag = true;
    lcd.write(0xFE);
    lcd.write(0x58);
    lcd.println("  My name is :");
@@ -807,9 +781,51 @@ void printName() {
    delay(10);
  }
  
- if (digitalRead(nameButton) == HIGH && pressFlag == true) {
-   pressFlag = false;
+ if (digitalRead(colorButton) == LOW && pressColorFlag == false) {
+    pressColorFlag = true;
+    lcd.write(0xFE);
+    lcd.write(0xD0);
+    int choice = random(7);
+    if (choice == 1) {
+      lcd.write(random(256));
+      lcd.write(random(256));
+      lcd.write((uint8_t)0);
+    } else if (choice == 2) {
+      lcd.write(random(256));
+      lcd.write((uint8_t)0);
+      lcd.write(random(256));
+    } else if (choice == 3) {
+      lcd.write((uint8_t)0);
+      lcd.write(random(256));
+      lcd.write(random(256));
+    } else if (choice == 4) {
+      lcd.write((uint8_t)0);
+      lcd.write(random(256));
+      lcd.write((uint8_t)0);
+    } else if (choice == 5) {
+      lcd.write(random(256));
+      lcd.write((uint8_t)0);
+      lcd.write((uint8_t)0);
+    } else if (choice == 6) {
+      lcd.write((uint8_t)0);
+      lcd.write((uint8_t)0);
+      lcd.write(random(256));
+    } else {
+      lcd.write(random(256));
+      lcd.write(random(256));
+      lcd.write(random(256));
+    }
+    delay(10);
+ }
+ 
+ if (digitalRead(nameButton) == HIGH && pressNameFlag == true) {
+   pressNameFlag = false;
    delay(10);
+ }
+ 
+ if (digitalRead(colorButton) == HIGH && pressColorFlag == true) {
+    pressColorFlag = false;
+    delay(10);
  }
  
 }
